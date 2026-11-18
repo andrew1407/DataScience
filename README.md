@@ -1,5 +1,13 @@
 # DataScience
 
+<p align="center">
+  <a href="https://andrew1407.github.io/DataScience/" title="Open the labs in the browser">
+    <img src="web/icon.svg" alt="Data Science Labs" width="96" height="96">
+  </a>
+</p>
+
+[![pages deploy badge](https://github.com/andrew1407/DataScience/actions/workflows/pages.yml/badge.svg)](https://andrew1407.github.io/DataScience/)
+
 A collection of Python data-science labs covering statistical data analysis, anomaly detection and signal cleaning, time-series forecasting, multi-criteria decision making, credit scoring, and computer-vision object detection. Each lab is a standalone folder with its own `main.py` entry point and `requirements.txt`.
 
 ## Labs
@@ -16,6 +24,22 @@ A collection of Python data-science labs covering statistical data analysis, ano
 | [`8-lab`](8-lab/main.py) | Credit scoring pipeline | Cleans and normalizes loan applicant data, builds an integro score (Voronin), filters fraud via rule-based validation, smooths anomalies, and trains a Keras model to predict the score. |
 | [`9-lab`](9-lab/main.py) | Computer vision (object detection) | Runs YOLOv3 weapon detection over input images with OpenCV's DNN module and non-maximum suppression, drawing bounding boxes. |
 | [`control-work`](control-work/main.py) | Statistical analysis | Analyzes a normal distribution combined with a periodic (cosine) trend. |
+
+## Showcase
+
+**[Open the labs in the browser](https://andrew1407.github.io/DataScience/)**. Labs 1–8 and the control work run from their own source code in [PyScript](https://pyscript.net), with editable parameters. Every figure a lab plots is drawn as an interactive chart, and each chart (PNG or CSV), table, printed output and set of results can be copied.
+
+- **What runs natively:** [`web/showcase.py`](web/showcase.py) runs each lab's `main.py` unchanged. It records the `matplotlib` calls instead of opening windows and replaces the lab's constants with the page's inputs. NumPy, pandas, scikit-learn and XGBoost are Pyodide's own packages, so labs 1–5, 7 and the control work run exactly as written.
+- **What's ported:** TensorFlow isn't available in the browser. In labs 6 and 8, `import tensorflow` gets a small stand-in whose `keras.Sequential` of `Dense` layers trains scikit-learn's `MLPRegressor` with the same layer sizes, optimiser, learning rate, batch size and epochs. Lab 2's `ThreadPoolExecutor` runs its jobs one after another, because Pyodide has no threads.
+- **Data:** labs 5 and 6 get build-time extracts of the OWID COVID-19 and Jena climate datasets from [`web/build_data.py`](web/build_data.py). The Excel inputs of labs 4, 7 and 8 aren't in the repository, so [`web/datagen.py`](web/datagen.py) writes clearly labelled synthetic workbooks with the same layout.
+- **Not included:** lab 9 needs the YOLOv3 weights and OpenCV's DNN module.
+
+Run it locally:
+
+```sh
+python web/build_data.py                          # downloads the datasets into web/data/
+python -m http.server                             # then open http://localhost:8000/web/
+```
 
 ## Tech stack
 
@@ -63,5 +87,6 @@ Notes on data inputs (these paths are git-ignored and must be supplied locally):
 │   ├── datasamples/        # data formatting, loggers, utils
 │   └── scoring_analysis/   # predictor, validation, anomalies, tools
 ├── 9-lab/          # YOLOv3 weapon detection (OpenCV)
-└── control-work/   # normal distribution + periodic trend analysis
+├── control-work/   # normal distribution + periodic trend analysis
+└── web/            # in-browser showcase (PyScript), deployed to GitHub Pages
 ```

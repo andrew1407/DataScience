@@ -18,6 +18,10 @@ __pycache__/
 9-lab/model
 9-lab/input
 
+# showcase build outputs
+web/data/
+_site/
+
 # Distribution / packaging
 .Python
 build/

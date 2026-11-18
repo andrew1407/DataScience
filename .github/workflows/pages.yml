@@ -1,0 +1,51 @@
+name: Deploy showcase to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Download the OWID COVID-19 (5-lab) and Jena climate (6-lab) datasets and keep the columns the labs read
+      - name: Build dataset extracts
+        run: python web/build_data.py
+
+      # Mirror the repo layout so web/pyscript.toml can load ../<lab>/*.py
+      - name: Assemble site
+        run: |
+          mkdir -p _site/web
+          cp web/*.html web/*.js web/*.py web/*.toml web/*.svg _site/web/
+          rm _site/web/build_data.py
+          cp -r web/data _site/web/
+          cp -r 1-lab 2-lab 3-lab 4-lab 5-lab 6-lab 7-lab 8-lab control-work _site/
+          find _site -name '__pycache__' -prune -exec rm -rf {} +
+          echo '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=./web/"><title>Data Science Labs</title><link rel="icon" href="./web/icon.svg"><a href="./web/">Open the showcase</a>' > _site/index.html
+          touch _site/.nojekyll
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
