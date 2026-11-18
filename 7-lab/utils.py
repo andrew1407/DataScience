@@ -38,7 +38,7 @@ def show_full_dataset(dataset: pd.DataFrame, target: str):
 
 def show_full_mnk_analysys(dataset: pd.DataFrame, target: str, predict: float):
   values = dataset[target]
-  analyzed = mnk.analyze(values, predict)
+  analyzed = mnk.analyze(values.values, predict)
   loggers = make_metrics_loggers(analyzed)
   (flattened, _), (extrapolated, _) = analyzed
   flattened = ds.extend_series(values, flattened)

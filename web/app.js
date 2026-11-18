@@ -582,7 +582,6 @@ const LABS = [
     run: (p, btn) => runPy('lab2', { ...p, learn: p.learn === 'learn' }, btn),
     render: (d, p) => standard(d, `${notes(
       p.learn === 'learn' ? note('Pyodide can\'t start threads, so the lab\'s <code>ThreadPoolExecutor</code> runs the 100 grid jobs one after another.', 'port') : '',
-      note('The histogram after “…with abnormal error” is computed from the clean composition: <code>main.py</code> passes <code>composition</code>, not <code>ab</code>, to <code>show_stats_mnk</code>.', 'bug'),
     )}<div class="stats">${stat(d.q_mnk ?? '–', `Q_MNK${p.learn === 'learn' ? ' (learned)' : ''}`)}${stat(d.n_wind ?? '–', `n_Wind${p.learn === 'learn' ? ' (learned)' : ''}`)}${stat(d.abnormal, 'abnormal samples')}${stat(`${d.seconds} s`, 'run time')}</div>`),
   },
   {
@@ -597,11 +596,11 @@ const LABS = [
       seedField,
     ],
     run: (p, btn) => runPy('lab3', p, btn),
-    render: (d) => standard(d, notes(note('As in lab 2, the histogram after “…with abnormal error” is computed from the clean composition: <code>analyze_purified_vales</code> passes <code>composition</code>, not <code>ab</code>.', 'bug'))),
+    render: (d) => standard(d),
   },
   {
     id: 'lab4', tab: '4', name: 'Voronin multi-criteria ranking', src: `${TREE}/4-lab`, file: '4-lab/main.py',
-    intro: 'Ranks options by the Voronin integral convolution: each criterion is normalised across the options (minimised criteria as x / Σx, maximised ones as (x · Σx)⁻¹), weighted by its preference coefficient, and summed as w / (1 − x). The option with the smallest convolution wins. <code>main.py</code> runs <code>routes</code>; <code>example</code> is the 9 × 9 product table.',
+    intro: 'Ranks options by the Voronin integral convolution: each criterion is normalised across the options (minimised criteria as x / Σx, maximised ones as (1/x) / Σ(1/x)), weighted by its preference coefficient, and summed as w / (1 − x). The option with the smallest convolution wins. <code>main.py</code> runs <code>routes</code>; <code>example</code> is the 9 × 9 product table.',
     fields: [{ key: 'module', label: 'MODULE', value: 'routes', radio: [['routes', 'routes'], ['example', 'example']] }],
     editor: true,
     run: (p, btn) => runPy('lab4', p, btn),
@@ -611,8 +610,7 @@ const LABS = [
       const order = d.integral ? d.integral.map((v, i) => [v, i]).sort((a, b) => a[0] - b[0]).map((x) => x[1]) : [];
       const rank = new Map(order.map((i, r) => [i, r + 1]));
       const rows = (d.integral || []).map((v, i) => `<tr class="${i === d.optimal ? 'best' : ''}">${td(i)}${td(names[i])}${td(v, true)}${td(rank.get(i), true)}</tr>`);
-      return standard(d, `${notes(synthetic(`<code>4-lab/tables/${p.module === 'routes' ? 'routes' : 'Pr1'}.xls</code> isn't in the repository, so the table above is made-up data with the same layout. It's saved as a workbook and read by the lab's own <code>pd.read_excel</code>.`),
-        note('For maximised criteria the lab uses (x · Σx)⁻¹; Voronin\'s method normalises them as (1/x) / Σ(1/x). The ranking follows the lab\'s formula.', 'bug'))}
+      return standard(d, `${notes(synthetic(`<code>4-lab/tables/${p.module === 'routes' ? 'routes' : 'Pr1'}.xls</code> isn't in the repository, so the table above is made-up data with the same layout. It's saved as a workbook and read by the lab's own <code>pd.read_excel</code>.`))}
         ${d.integral ? `<div class="stats">${stat(esc(names[d.optimal]), `optimal (index ${d.optimal})`, 'good')}${stat(fmt(d.integral[d.optimal], 6), 'its integral convolution')}${stat(d.integral.length, 'options')}</div>` : ''}
         ${d.integral ? tableBox('Integral convolution', [{ label: 'Index', num: true }, 'Option', { label: 'Convolution', num: true }, { label: 'Rank', num: true }], rows, { sub: 'smaller is better' }) : ''}`);
     },
@@ -679,17 +677,10 @@ const LABS = [
       const last = d.history?.val_loss?.length ? d.history.val_loss[d.history.val_loss.length - 1] : undefined;
       return standard(d, `${notes(
         synthetic('The three <code>8-lab/input/*.xlsx</code> files aren\'t in the repository. The page generates made-up applicants with the fields the lab reads (birth_date, loan_amount, monthly_income, the *_id codes, the seven columns it drops…), a field description with <code>Place_of_definition</code>, and a min/max description. About one applicant in eight gets several contradictions.'),
-        note('<b>Ported.</b> As in lab 6, <code>tensorflow</code> is a stand-in that trains scikit-learn\'s <code>MLPRegressor</code> with the same layers, Adam learning rate, batch size and epochs. The lab also relies on <code>np.bool8</code> and positional <code>series[j]</code>, which numpy 2 and pandas 3 removed. Both are restored for this run.', 'port'),
-        note('In <code>normalize_criteria</code> the bound for maximised criteria is named <code>min_min</code> but is computed from the column maximum (<code>sample_max[j]</code>), like the one for minimised criteria.', 'bug'),
+        note('<b>Ported.</b> As in lab 6, <code>tensorflow</code> is a stand-in that trains scikit-learn\'s <code>MLPRegressor</code> with the same layers, Adam learning rate, batch size and epochs.', 'port'),
       )}<div class="stats">${stat(n, 'applicants scored')}${stat(frauds, 'flagged as fraud', frauds ? 'bad' : '')}${stat(d.predicted_valid ? d.predicted_valid.filter(Boolean).length : '–', 'predicted score > 1000')}${last !== undefined ? stat(fmt(last, 2), 'last val_loss (MSE)') : ''}${stat(`${d.seconds} s`, 'run time')}</div>`,
       n ? tableBox('Applicants', [{ label: '#', num: true }, { label: 'Integro', num: true }, { label: 'Flattened', num: true }, { label: 'Contradictions', num: true }, 'Validation', { label: 'Predicted', num: true }, 'Prediction'], rows, { sub: 'rows flagged as fraud are highlighted' }) : '');
     },
-  },
-  {
-    id: 'lab9', tab: '9', name: 'YOLOv3 weapon detection', src: `${TREE}/9-lab`, file: '9-lab/main.py', info: true,
-    intro: 'Runs a YOLOv3 network trained to detect weapons over the images in <code>input/</code> with OpenCV\'s DNN module, keeps detections above 0.5 confidence, applies non-maximum suppression and draws the bounding boxes.',
-    infoHtml: `<p class="note">This lab isn't part of the showcase.</p><ul class="info-list"><li>It needs the trained model, <code>model/yolov3_training_2000.weights</code> (about 235 MB) and <code>yolov3_testing.cfg</code>, which aren't in the repository.</li><li>It uses <code>opencv-python</code>'s <code>cv2.dnn</code> module, which isn't available in Pyodide.</li></ul><p class="hint">See <a href="${SRC}/9-lab/main.py" target="_blank" rel="noopener">9-lab/main.py</a> for the code.</p>`,
-    fields: [],
   },
   {
     id: 'control', tab: 'CW', name: 'Normal distribution + periodic trend', src: `${TREE}/control-work`, file: 'control-work/main.py',
@@ -727,22 +718,21 @@ function build() {
     const b = document.createElement('button');
     b.type = 'button'; b.role = 'tab'; b.dataset.lab = lab.id;
     b.setAttribute('aria-controls', `panel-${lab.id}`);
-    b.innerHTML = `<span class="lang ${lab.info ? 'off' : 'py'}">Py</span>${tabName(lab).replace('Control work', 'CW')}<span class="long muted" style="font-weight:400">· ${esc(lab.name)}</span>`;
+    b.innerHTML = `<span class="lang py">Py</span>${tabName(lab).replace('Control work', 'CW')}<span class="long muted" style="font-weight:400">· ${esc(lab.name)}</span>`;
     b.onclick = () => select(lab.id, true);
     nav.appendChild(b);
 
     const ported = ['lab6', 'lab8'].includes(lab.id);
     const sec = document.createElement('section');
     sec.className = 'panel'; sec.id = `panel-${lab.id}`; sec.role = 'tabpanel'; sec.hidden = true;
-    sec.innerHTML = `<div class="lab-head"><span class="lang ${lab.info ? 'off' : 'py'}">${lab.info ? 'Not included' : 'Python'}</span>${ported ? '<span class="lang port" title="TensorFlow is replaced by a scikit-learn stand-in">TF → sklearn</span>' : ''}<h3>${tabName(lab)}: ${esc(lab.name)}</h3><a href="${SRC}/${lab.file}" target="_blank" rel="noopener">View source</a></div>
+    sec.innerHTML = `<div class="lab-head"><span class="lang py">Python</span>${ported ? '<span class="lang port" title="TensorFlow is replaced by a scikit-learn stand-in">TF → sklearn</span>' : ''}<h3>${tabName(lab)}: ${esc(lab.name)}</h3><a href="${SRC}/${lab.file}" target="_blank" rel="noopener">View source</a></div>
       <p class="intro">${lab.intro}</p>
-      ${lab.info ? lab.infoHtml : `<form class="params" novalidate>${lab.fields.map((f) => fieldHtml(lab, f)).join('')}<button class="run" type="submit">Run</button></form>
+      <form class="params" novalidate>${lab.fields.map((f) => fieldHtml(lab, f)).join('')}<button class="run" type="submit">Run</button></form>
       ${lab.editor ? '<div class="editor"></div>' : ''}
       ${lab.hint ? `<p class="hint">${lab.hint}</p>` : ''}
-      <div class="out" style="margin-top:18px"></div>`}`;
+      <div class="out" style="margin-top:18px"></div>`;
     main.appendChild(sec);
-    state.set(lab.id, { ran: !!lab.info, running: false });
-    if (lab.info) continue;
+    state.set(lab.id, { ran: false, running: false });
 
     const form = $('form', sec);
     const sync = () => sec.querySelectorAll('[data-when]').forEach((el) => {

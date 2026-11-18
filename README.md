@@ -32,7 +32,6 @@ A collection of Python data-science labs covering statistical data analysis, ano
 - **What runs natively:** [`web/showcase.py`](web/showcase.py) runs each lab's `main.py` unchanged. It records the `matplotlib` calls instead of opening windows and replaces the lab's constants with the page's inputs. NumPy, pandas, scikit-learn and XGBoost are Pyodide's own packages, so labs 1–5, 7 and the control work run exactly as written.
 - **What's ported:** TensorFlow isn't available in the browser. In labs 6 and 8, `import tensorflow` gets a small stand-in whose `keras.Sequential` of `Dense` layers trains scikit-learn's `MLPRegressor` with the same layer sizes, optimiser, learning rate, batch size and epochs. Lab 2's `ThreadPoolExecutor` runs its jobs one after another, because Pyodide has no threads.
 - **Data:** labs 5 and 6 get build-time extracts of the OWID COVID-19 and Jena climate datasets from [`web/build_data.py`](web/build_data.py). The Excel inputs of labs 4, 7 and 8 aren't in the repository, so [`web/datagen.py`](web/datagen.py) writes clearly labelled synthetic workbooks with the same layout.
-- **Not included:** lab 9 needs the YOLOv3 weights and OpenCV's DNN module.
 
 Run it locally:
 

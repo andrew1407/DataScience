@@ -79,7 +79,7 @@ def analyze_purified_vales(array_size: int):
   title = 'Square trend & normal distribution with abnormal error'
   print()
   vg.plot_sales_dynamics(square, ab, title)
-  show_stats_kalman(composition, apply_kalman=True, title=title)
+  show_stats_kalman(ab, apply_kalman=True, title=title)
 
   flattened = detect_anomalies_aging(reject_outliers(ab, m=3))
   title = 'Square trend & normal distribution cleaned with 2-nd order Kalman'

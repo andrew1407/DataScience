@@ -16,9 +16,6 @@ To make that work in Pyodide:
   the same layer sizes, activation, optimiser (Adam), learning rate, batch size
   and epochs.
 - Pyodide has no threads: 2-lab's ThreadPoolExecutor runs the same jobs one by one.
-- numpy 2 and pandas 3 dropped `np.bool8` and positional `series[int]` on a
-  labelled index, which the labs use (they pinned numpy 1.24 / pandas 2.0); both
-  are restored.
 
 Datasets: labs 5 and 6 read their CSV from the path they'd cache the download at,
 so the build-time extracts (build_data.py) are written there first. The Excel
@@ -49,25 +46,6 @@ import datagen
 ROOT = os.path.abspath('labs')
 POINT_LIMIT = 2400  # line series longer than this are thinned (min/max per bucket) for drawing
 
-# ----------------------------------------------------------- compatibility --
-if not hasattr(np, 'bool8'):
-  np.bool8 = np.bool_  # removed in numpy 2.0; 8-lab/data_predictions.py uses it
-
-_series_getitem = pd.Series.__getitem__
-
-
-def _getitem_pandas2(self, key):
-  # pandas < 3 fell back to position for `series[int]` when the index has labels
-  # (8-lab/datasamples/utils.py reads `sample_max[j]`)
-  if isinstance(key, (int, np.integer)) and not isinstance(key, bool) and self.index.dtype.kind not in 'iuf':
-    try:
-      return _series_getitem(self, key)
-    except KeyError:
-      return self.iloc[int(key)]
-  return _series_getitem(self, key)
-
-
-pd.Series.__getitem__ = _getitem_pandas2
 sys.dont_write_bytecode = True
 
 

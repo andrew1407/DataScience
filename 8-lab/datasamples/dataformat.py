@@ -91,7 +91,7 @@ def split_minmax(segment_sample_minmax: pd.DataFrame, minmax_cols: pd.Series) ->
 
 
 @loggers.analyze_scoring_map_logger
-def analyze_scoring_map(dataframes: tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame],
+def analyze_scoring_map(dataframes: tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series],
                         targets: tuple[str, str, str], delta: float = 0.3, take: int = None) -> tuple[np.ndarray, np.ndarray, int]:
   normalized, n = normalize_criteria(dataframes, targets, delta)
   if take is None: take = len(normalized)

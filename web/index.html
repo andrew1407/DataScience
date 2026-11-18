@@ -53,7 +53,6 @@
     .lang { font: 600 10px/1 system-ui, sans-serif; letter-spacing: .04em; padding: 3px 5px; border-radius: 5px; border: 1px solid; text-transform: uppercase; }
     .lang.py { color: var(--py); background: var(--py-soft); border-color: var(--py); }
     .lang.port { color: var(--c2); background: color-mix(in srgb, var(--c2) 12%, transparent); border-color: var(--c2); }
-    .lang.off { color: var(--muted); background: transparent; border-color: var(--line); }
 
     .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin-bottom: 16px; }
     h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 12px; font-weight: 600; }
@@ -156,7 +155,6 @@
     .notes { display: grid; gap: 8px; margin: 0 0 14px; }
     .notes .note { margin: 0; }
     .note.port { border-left-color: var(--c1); background: color-mix(in srgb, var(--c1) 8%, transparent); }
-    .note.bug { border-left-color: var(--err); background: var(--err-soft); }
     .gallery-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 20px 0 10px; }
     .gallery-head h2 { margin: 0; }
     .fig-n { color: var(--muted); font-weight: 400; font-variant-numeric: tabular-nums; margin-right: 2px; }
@@ -175,8 +173,6 @@
     .editor .row-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
     tr.best td { background: var(--ok-soft); }
     tr.flag td { background: var(--err-soft); }
-    .info-list { margin: 0 0 8px; padding-left: 20px; color: var(--ink); }
-    .info-list li { margin: 4px 0; }
 
     @media (max-width: 720px) {
       .wrap { padding-top: 18px; }
@@ -218,7 +214,7 @@
     </div>
   </template>
 
-  <footer>Every run is random unless you set a seed, as in the labs. Timings and trained models are from your browser, so they differ from a native run. Lab 9 (YOLOv3 weapon detection) isn't included.</footer>
+  <footer>Every run is random unless you set a seed, as in the labs. Timings and trained models are from your browser, so they differ from a native run.</footer>
 </div>
 
 <script type="py" src="./bridge.py" config="./pyscript.toml"></script>

@@ -24,7 +24,7 @@ def fltten_anomalies(integro: np.ndarray) -> np.ndarray:
 
 def handle_fraud(dataset: pd.DataFrame, integro: np.ndarray) -> np.ndarray:
   contradictions, valid = sav.validate_table(dataset, FRAUD_BARRIER)
-  frauds_mask = ~valid.astype(np.bool8)
+  frauds_mask = ~valid.astype(np.bool_)
   frauds = dataset[frauds_mask].index
   integro_filtered = integro.copy()
   integro_filtered[frauds_mask] = 0

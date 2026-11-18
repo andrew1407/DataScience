@@ -28,7 +28,7 @@ if __name__ == '__main__':
   title = 'Square trend & normal distribultion with abnormal error'
   print()
   vg.plot_sales_dynamics(square, ab, title)
-  sp.show_stats_mnk(composition, apply_mnk=True, title=title)
+  sp.show_stats_mnk(ab, apply_mnk=True, title=title)
 
   # Q_MNK, n_Wind = 5, 10
   Q_MNK, n_Wind = sp.learn_detection_params(square, composition, abnormal_percentage, quality_coef)

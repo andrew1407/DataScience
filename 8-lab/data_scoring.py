@@ -52,7 +52,7 @@ def parse_scoring_map(sample_cleaned: pd.DataFrame) -> tuple[np.ndarray, int]:
   segment_sample_min, segment_sample_max = df.split_minmax(segment_sample_minmax, minmax_cols)
   criteria_field = 'loan_amount'
   normalized, integro, take = df.analyze_scoring_map(
-    dataframes=(segment_description_minmax, segment_sample_minmax, segment_sample_max),
+    dataframes=(segment_description_minmax, segment_sample_minmax, segment_sample_min, segment_sample_max),
     targets=(TARGET_FIELD, criteria_field, minmax_target),
     delta=.3,
     # take=150,

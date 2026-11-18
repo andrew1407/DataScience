@@ -13,9 +13,9 @@ def fix_index(data: pd.DataFrame):
   data.reset_index(drop=True, inplace=True)
 
 
-def normalize_criteria(dataframes: tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame],
+def normalize_criteria(dataframes: tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series],
                        targets: tuple[str, str, str], delta: float = 0.3) -> tuple[np.ndarray, int]:
-  description, segments, sample_max = dataframes
+  description, segments, sample_min, sample_max = dataframes
   target_field, criteria_field, minmax_field = targets
   m = segments[criteria_field].size
   n = description[target_field].size
@@ -25,10 +25,10 @@ def normalize_criteria(dataframes: tuple[pd.DataFrame, pd.DataFrame, pd.DataFram
     columns_m = description[target_field][j]
     for i in range(len(segments)):
       if columns_d == 'min':
-        max_max = sample_max[j] + (2 * delta)
+        max_max = sample_max.iloc[j] + (2 * delta)
         normalized[i, j] = (delta + segments[columns_m][i]) / max_max
       else:
-        min_min = sample_max[j] + (2 * delta)
+        min_min = 1 / (sample_min.iloc[j] + delta) + delta
         normalized[i, j] = (1 / (delta + segments[columns_m][i])) / min_min
   return normalized, n
 
