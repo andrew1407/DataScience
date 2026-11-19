@@ -41,7 +41,9 @@ def write_pr1(path: str, table: dict):
   """4-lab/example.py reads 9 criteria rows of 'Товар 1' … 'Товар 9' as text with a
   decimal comma, and 'Критерій' = 'мін' for minimised criteria."""
   rows = table['rows']
-  frame = pd.DataFrame({'Показник': [r['name'] for r in rows], 'Критерій': [r['criterion'] for r in rows]})
+  # the page says min/max in English; the lab's workbook uses 'мін'/'макс'
+  lab_criterion = {'min': 'мін', 'max': 'макс'}
+  frame = pd.DataFrame({'Показник': [r['name'] for r in rows], 'Критерій': [lab_criterion.get(r['criterion'], r['criterion']) for r in rows]})
   for i in range(9):
     # two decimals with a comma, as the lab expects (`.replace(',', '.')`); a column of plain
     # integers would be read back as numbers and break that call

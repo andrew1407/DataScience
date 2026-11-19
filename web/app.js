@@ -480,27 +480,27 @@ function standard(d, top = '', after = '') {
 // ------------------------------------------------------------- lab 4 data --
 // Made-up defaults with the layout of 4-lab/tables/*.xls (those files aren't in the repo).
 const ROUTES = {
-  columns: ['Автомобіль', 'Потяг', 'Автобус', 'Літак'],
+  columns: ['Car', 'Train', 'Bus', 'Plane'],
   rows: [
-    { name: 'Час у дорозі, год', criterion: 'min', coef: 0.25, values: [6.5, 5, 8.5, 1.3] },
-    { name: 'Вартість, грн', criterion: 'min', coef: 0.25, values: [2400, 850, 650, 3600] },
-    { name: 'Пересадки', criterion: 'min', coef: 0.1, values: [0, 1, 1, 1] },
-    { name: 'Затримки, %', criterion: 'min', coef: 0.15, values: [12, 8, 15, 20] },
-    { name: 'Комфорт, бали', criterion: 'max', coef: 0.15, values: [7, 8, 5, 9] },
-    { name: 'Безпека, бали', criterion: 'max', coef: 0.1, values: [6, 9, 7, 9] },
+    { name: 'Travel time, h', criterion: 'min', coef: 0.25, values: [6.5, 5, 8.5, 1.3] },
+    { name: 'Cost, UAH', criterion: 'min', coef: 0.25, values: [2400, 850, 650, 3600] },
+    { name: 'Transfers', criterion: 'min', coef: 0.1, values: [0, 1, 1, 1] },
+    { name: 'Delays, %', criterion: 'min', coef: 0.15, values: [12, 8, 15, 20] },
+    { name: 'Comfort, points', criterion: 'max', coef: 0.15, values: [7, 8, 5, 9] },
+    { name: 'Safety, points', criterion: 'max', coef: 0.1, values: [6, 9, 7, 9] },
   ],
 };
 const PR1 = {
   rows: [
-    ['Ціна, тис. грн', 'мін', [12.5, 14.2, 9.8, 11.3, 15.7, 10.4, 13.9, 8.6, 12.1]],
-    ['Вага, кг', 'мін', [3.4, 2.9, 4.1, 3.2, 2.5, 3.8, 3.0, 4.4, 3.6]],
-    ['Енергоспоживання, Вт', 'мін', [65.5, 45.2, 90.1, 60.3, 40.8, 75.6, 55.4, 95.2, 70.7]],
-    ['Термін доставки, днів', 'мін', [3.5, 5.0, 2.5, 4.0, 7.5, 3.0, 6.0, 2.0, 4.5]],
-    ['Шум, дБ', 'мін', [38.5, 34.2, 44.1, 36.8, 31.5, 41.2, 35.6, 46.3, 39.4]],
-    ['Гарантія, років', 'макс', [2.5, 3.0, 1.5, 2.0, 5.0, 1.5, 3.5, 1.0, 2.5]],
-    ['Рейтинг продавця', 'макс', [4.5, 4.7, 3.9, 4.2, 4.9, 4.0, 4.6, 3.6, 4.3]],
-    ['Вартість ремонту, тис. грн', 'мін', [2.4, 2.9, 1.8, 2.2, 3.5, 2.0, 2.7, 1.6, 2.3]],
-    ['Ресурс, тис. год', 'макс', [20.5, 25.0, 15.5, 18.0, 30.5, 16.0, 22.5, 12.0, 19.5]],
+    ['Price, k UAH', 'min', [12.5, 14.2, 9.8, 11.3, 15.7, 10.4, 13.9, 8.6, 12.1]],
+    ['Weight, kg', 'min', [3.4, 2.9, 4.1, 3.2, 2.5, 3.8, 3.0, 4.4, 3.6]],
+    ['Power use, W', 'min', [65.5, 45.2, 90.1, 60.3, 40.8, 75.6, 55.4, 95.2, 70.7]],
+    ['Delivery time, days', 'min', [3.5, 5.0, 2.5, 4.0, 7.5, 3.0, 6.0, 2.0, 4.5]],
+    ['Noise, dB', 'min', [38.5, 34.2, 44.1, 36.8, 31.5, 41.2, 35.6, 46.3, 39.4]],
+    ['Warranty, years', 'max', [2.5, 3.0, 1.5, 2.0, 5.0, 1.5, 3.5, 1.0, 2.5]],
+    ['Seller rating', 'max', [4.5, 4.7, 3.9, 4.2, 4.9, 4.0, 4.6, 3.6, 4.3]],
+    ['Repair cost, k UAH', 'min', [2.4, 2.9, 1.8, 2.2, 3.5, 2.0, 2.7, 1.6, 2.3]],
+    ['Service life, k h', 'max', [20.5, 25.0, 15.5, 18.0, 30.5, 16.0, 22.5, 12.0, 19.5]],
   ].map(([name, criterion, values]) => ({ name, criterion, values })),
 };
 const copy = (o) => JSON.parse(JSON.stringify(o));
@@ -511,13 +511,13 @@ function editorHtml(module) {
   const crit = (v, opts) => `<select data-k="criterion">${opts.map((o) => `<option${o === v ? ' selected' : ''}>${o}</option>`).join('')}</select>`;
   const cell = (v) => `<td><input data-k="v" inputmode="decimal" value="${esc(v)}"></td>`;
   if (module === 'routes') {
-    const head = `<tr><th>Criterion <small>(column 0)</small></th><th>Критерій</th><th>Коефіцієнт</th>${t.columns.map((c, i) => `<th><input data-col="${i}" value="${esc(c)}" aria-label="Route ${i + 1} name"></th>`).join('')}</tr>`;
+    const head = `<tr><th>Criterion <small>(column 0)</small></th><th>Min / max</th><th>Weight</th>${t.columns.map((c, i) => `<th><input data-col="${i}" value="${esc(c)}" aria-label="Route ${i + 1} name"></th>`).join('')}</tr>`;
     const rows = t.rows.map((r, i) => `<tr data-row="${i}"><td><input class="name" data-k="name" value="${esc(r.name)}"></td><td>${crit(r.criterion, ['min', 'max'])}</td><td><input data-k="coef" inputmode="decimal" value="${r.coef}"></td>${r.values.map(cell).join('')}</tr>`).join('');
     return `<div data-copyable data-title="routes.xls"><div class="copy-head"><h2>tables/routes.xls <small>· edit any cell; one column per route</small></h2>${actions('table')}</div><div class="table-wrap"><table>${head}${rows}</table></div>
       <div class="row-actions"><button type="button" class="mini" data-edit="add-row">+ criterion</button><button type="button" class="mini" data-edit="del-row">− criterion</button><button type="button" class="mini" data-edit="add-col">+ route</button><button type="button" class="mini" data-edit="del-col">− route</button><button type="button" class="mini" data-edit="reset">Reset</button></div></div>`;
   }
-  const head = `<tr><th>Показник</th><th>Критерій</th>${range(9, (i) => `<th>Товар ${i + 1}</th>`).join('')}</tr>`;
-  const rows = t.rows.map((r, i) => `<tr data-row="${i}"><td><input class="name" data-k="name" value="${esc(r.name)}"></td><td>${crit(r.criterion, ['мін', 'макс'])}</td>${r.values.map(cell).join('')}</tr>`).join('');
+  const head = `<tr><th>Criterion</th><th>Min / max</th>${range(9, (i) => `<th>Product ${i + 1}</th>`).join('')}</tr>`;
+  const rows = t.rows.map((r, i) => `<tr data-row="${i}"><td><input class="name" data-k="name" value="${esc(r.name)}"></td><td>${crit(r.criterion, ['min', 'max'])}</td>${r.values.map(cell).join('')}</tr>`).join('');
   return `<div data-copyable data-title="Pr1.xls"><div class="copy-head"><h2>tables/Pr1.xls <small>· 9 criteria × 9 products (fixed by example.py)</small></h2>${actions('table')}</div><div class="table-wrap"><table>${head}${rows}</table></div>
     <div class="row-actions"><button type="button" class="mini" data-edit="reset">Reset</button></div></div>`;
 }
@@ -548,9 +548,9 @@ function bindEditor(sec) {
     const m = module(), t = readEditor(sec, m);
     const act = b.dataset.edit;
     if (act === 'reset') tables[m] = copy(m === 'routes' ? ROUTES : PR1);
-    if (act === 'add-row') t.rows.push({ name: `Критерій ${t.rows.length + 1}`, criterion: 'min', coef: 0.1, values: t.columns.map(() => 1) });
+    if (act === 'add-row') t.rows.push({ name: `Criterion ${t.rows.length + 1}`, criterion: 'min', coef: 0.1, values: t.columns.map(() => 1) });
     if (act === 'del-row' && t.rows.length > 2) t.rows.pop();
-    if (act === 'add-col' && t.columns.length < 12) { t.columns.push(`Маршрут ${t.columns.length + 1}`); t.rows.forEach((r) => r.values.push(1)); }
+    if (act === 'add-col' && t.columns.length < 12) { t.columns.push(`Route ${t.columns.length + 1}`); t.rows.forEach((r) => r.values.push(1)); }
     if (act === 'del-col' && t.columns.length > 2) { t.columns.pop(); t.rows.forEach((r) => r.values.pop()); }
     draw();
   });
@@ -627,7 +627,7 @@ const LABS = [
     run: (p, btn) => runPy('lab4', p, btn),
     render: (d, p) => {
       const t = tables[p.module];
-      const names = p.module === 'routes' ? t.columns : range(9, (i) => `Товар ${9 - i}`); // example.py stores the products from 9 down to 1
+      const names = p.module === 'routes' ? t.columns : range(9, (i) => `Product ${9 - i}`); // example.py stores the products from 9 down to 1
       const order = d.integral ? d.integral.map((v, i) => [v, i]).sort((a, b) => a[0] - b[0]).map((x) => x[1]) : [];
       const rank = new Map(order.map((i, r) => [i, r + 1]));
       const rows = (d.integral || []).map((v, i) => `<tr class="${i === d.optimal ? 'best' : ''}">${td(i)}${td(names[i])}${td(v, true)}${td(rank.get(i), true)}</tr>`);
