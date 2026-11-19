@@ -6,9 +6,7 @@
   <title>Data Science Labs</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <script src="theme.js"></script>
-  <meta name="description" content="Run the DataScience labs in your browser through PyScript: synthetic distributions and trends, least-squares and Kalman anomaly cleaning, Voronin multi-criteria ranking, XGBoost COVID-19 forecasting, climate and sales extrapolation, and a credit-scoring pipeline.">
-  <link rel="stylesheet" href="https://pyscript.net/releases/2026.7.3/core.css">
-  <script type="module" src="https://pyscript.net/releases/2026.7.3/core.js"></script>
+  <meta name="description" content="Run the DataScience labs in your browser through Pyodide: synthetic distributions and trends, least-squares and Kalman anomaly cleaning, Voronin multi-criteria ranking, XGBoost COVID-19 forecasting, climate and sales extrapolation, and a credit-scoring pipeline.">
   <style>
     :root {
       --bg: #f6f7f9; --panel: #ffffff; --ink: #1b1f24; --muted: #5d6673; --line: #dfe3e8; --grid: #eceff3;
@@ -190,14 +188,13 @@
     }
   </style>
 </head>
-</head>
 <body>
 <div class="wrap">
   <header>
     <img src="icon.svg" alt="" width="52" height="52">
     <div>
       <h1>Data Science Labs</h1>
-      <p>The <a href="https://github.com/Andrew1407/DataScience">DataScience</a> labs, running in your browser. Each lab's own Python runs through PyScript, and every figure it would plot is drawn here as an interactive chart.</p>
+      <p>The <a href="https://github.com/Andrew1407/DataScience">DataScience</a> labs, running in your browser. Each lab's own Python runs through Pyodide in a background worker, and every figure it would plot is drawn here as an interactive chart.</p>
     </div>
     <button class="theme-toggle" data-theme-toggle></button>
   </header>
@@ -217,7 +214,6 @@
   <footer>Every run is random unless you set a seed, as in the labs. Timings and trained models are from your browser, so they differ from a native run.</footer>
 </div>
 
-<script type="py" src="./bridge.py" config="./pyscript.toml"></script>
 <script type="module" src="./app.js"></script>
 </body>
 </html>

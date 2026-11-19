@@ -27,7 +27,7 @@ A collection of Python data-science labs covering statistical data analysis, ano
 
 ## Showcase
 
-**[Open the labs in the browser](https://andrew1407.github.io/DataScience/)**. Labs 1–8 and the control work run from their own source code in [PyScript](https://pyscript.net), with editable parameters. Every figure a lab plots is drawn as an interactive chart, and each chart (PNG or CSV), table, printed output and set of results can be copied.
+**[Open the labs in the browser](https://andrew1407.github.io/DataScience/)**. Labs 1–8 and the control work run from their own source code in [Pyodide](https://pyodide.org), in a Web Worker so training never freezes the page, with editable parameters. Every figure a lab plots is drawn as an interactive chart, and each chart (PNG or CSV), table, printed output and set of results can be copied.
 
 - **What runs natively:** [`web/showcase.py`](web/showcase.py) runs each lab's `main.py` unchanged. It records the `matplotlib` calls instead of opening windows and replaces the lab's constants with the page's inputs. NumPy, pandas, scikit-learn and XGBoost are Pyodide's own packages, so labs 1–5, 7 and the control work run exactly as written.
 - **What's ported:** TensorFlow isn't available in the browser. In labs 6 and 8, `import tensorflow` gets a small stand-in whose `keras.Sequential` of `Dense` layers trains scikit-learn's `MLPRegressor` with the same layer sizes, optimiser, learning rate, batch size and epochs. Lab 2's `ThreadPoolExecutor` runs its jobs one after another, because Pyodide has no threads.
@@ -87,5 +87,5 @@ Notes on data inputs (these paths are git-ignored and must be supplied locally):
 │   └── scoring_analysis/   # predictor, validation, anomalies, tools
 ├── 9-lab/          # YOLOv3 weapon detection (OpenCV)
 ├── control-work/   # normal distribution + periodic trend analysis
-└── web/            # in-browser showcase (PyScript), deployed to GitHub Pages
+└── web/            # in-browser showcase (Pyodide in a Web Worker), deployed to GitHub Pages
 ```

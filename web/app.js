@@ -1,5 +1,5 @@
 // Data Science Labs showcase: lab panels, SVG charts and copy actions.
-// Every lab runs its own Python through window.pyRun (bridge.py → showcase.py, PyScript).
+// Every lab runs its own Python in a Pyodide Web Worker (worker.js → bridge.py → showcase.py).
 // The labs' matplotlib calls are recorded as figure descriptions and drawn here.
 
 const REPO = 'https://github.com/Andrew1407/DataScience';
@@ -14,25 +14,46 @@ const fmt = (v, d = 4) => {
   return String(+v.toFixed(d));
 };
 const range = (n, f = (i) => i) => Array.from({ length: n }, (_, i) => f(i));
-const pause = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
 const stat = (value, label, cls = '') => `<div class="stat ${cls}"><b>${value}</b><span>${label}</span></div>`;
 
 // ----------------------------------------------------------------- runtime --
+// Python runs in worker.js (Pyodide in a Web Worker), so the page stays responsive while a lab trains.
 let pyReady = false;
 const pyWaiters = [];
-window.addEventListener('py-ready', () => {
-  pyReady = true;
-  document.querySelectorAll('.py-status').forEach((el) => el.remove());
-  pyWaiters.splice(0).forEach((f) => f());
-});
-const whenPy = () => (pyReady ? Promise.resolve() : new Promise((r) => pyWaiters.push(r)));
+const pyCalls = new Map();
+let pySeq = 0;
+const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
+worker.onmessage = ({ data }) => {
+  if (data.type === 'ready') {
+    pyReady = true;
+    document.querySelectorAll('.py-status').forEach((el) => el.remove());
+    pyWaiters.splice(0).forEach((w) => w.ok());
+  } else if (data.type === 'failed') pyFailed(data.error);
+  else { pyCalls.get(data.id)?.(data.result); pyCalls.delete(data.id); }
+};
+worker.onerror = (e) => { e.preventDefault?.(); pyFailed(e.message || 'The Python worker could not start.'); };
+function pyFailed(msg) {
+  console.error('Python runtime:', msg);
+  document.querySelectorAll('.py-status').forEach((el) => {
+    el.classList.add('slow');
+    $('b', el).textContent = 'The Python runtime failed to load.';
+    $('.note-text', el).textContent = `${msg} Reload the page to try again.`;
+  });
+  pyWaiters.splice(0).forEach((w) => w.fail(new Error(`The Python runtime failed to load: ${msg}`)));
+}
+const whenPy = () => (pyReady ? Promise.resolve() : new Promise((ok, fail) => pyWaiters.push({ ok, fail })));
+const pyCall = (type, name, params) => new Promise((r) => { const id = ++pySeq; pyCalls.set(id, r); worker.postMessage({ id, type, name, params }); });
 
 async function runPy(name, params, btn) {
   await whenPy();
-  const need = await window.pyNeed(name);
-  if (need && btn) btn.textContent = `Loading ${need}…`;
-  await pause();
-  const res = JSON.parse(await window.pyRun(name, JSON.stringify(params)));
+  const need = await pyCall('need', name);
+  if (need) {
+    if (btn) btn.dataset.phase = `Loading ${need}…`;
+    const err = await pyCall('prepare', name);
+    if (btn) delete btn.dataset.phase;
+    if (err) throw new Error(err);
+  }
+  const res = JSON.parse(await pyCall('run', name, JSON.stringify(params)));
   if (!res.ok) throw new Error(res.error);
   return res.data;
 }
@@ -779,7 +800,10 @@ async function run(lab) {
   const bad = invalid(lab, p);
   if (bad) { out.innerHTML = `<div class="err">${esc(bad)}</div>`; return; }
   st.running = true; st.ran = true;
-  btn.disabled = true; btn.textContent = !pyReady ? 'Waiting for Python…' : 'Running…';
+  btn.disabled = true; delete btn.dataset.phase;
+  const t0 = performance.now();
+  const label = () => { const s = Math.floor((performance.now() - t0) / 1000); btn.textContent = `${btn.dataset.phase || (!pyReady ? 'Waiting for Python…' : 'Running…')}${s ? ` ${s} s` : ''}`; };
+  label(); const timer = setInterval(label, 250);
   out.style.opacity = '.45';
   try {
     const data = await lab.run(p, btn);
@@ -789,6 +813,7 @@ async function run(lab) {
     console.error(e);
     out.innerHTML = `<div class="err">${esc(e.message || e)}</div>`;
   } finally {
+    clearInterval(timer); delete btn.dataset.phase;
     st.running = false; btn.disabled = false; btn.textContent = 'Run'; out.style.opacity = '';
   }
 }

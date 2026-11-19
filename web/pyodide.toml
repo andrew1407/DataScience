@@ -1,3 +1,4 @@
+# Pyodide runtime for worker.js: packages loaded at start, then [files] fetched (relative to web/) into the worker's file system.
 packages = ["numpy", "pandas"]
 
 [files]

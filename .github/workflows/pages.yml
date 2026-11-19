@@ -31,7 +31,7 @@ jobs:
       - name: Build dataset extracts
         run: python web/build_data.py
 
-      # Mirror the repo layout so web/pyscript.toml can load ../<lab>/*.py
+      # Mirror the repo layout so web/worker.js can load ../<lab>/*.py (listed in web/pyodide.toml)
       - name: Assemble site
         run: |
           mkdir -p _site/web
