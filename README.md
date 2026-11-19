@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://andrew1407.github.io/DataScience/" title="Open the labs in the browser">
-    <img src="web/icon.svg" alt="Data Science Labs" width="96" height="96">
+    <img src="web/icon.svg" alt="Data Science Labs" width="140" height="140">
   </a>
 </p>
 
